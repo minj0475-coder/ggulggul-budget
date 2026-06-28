@@ -1,0 +1,3100 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>꿀꿀 부부 가계부</title>
+  <meta name="theme-color" content="#f7f7f5" />
+  <meta name="application-name" content="꿀꿀 부부 가계부" />
+  <meta name="apple-mobile-web-app-title" content="꿀꿀 부부 가계부" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --bg: #f7f7f5;
+      --card: #ffffff;
+      --card-2: #f1f1ef;
+      --text: #202123;
+      --muted: #6b6f76;
+      --muted-2: #8a8f98;
+      --line: #e2e2df;
+      --line-2: #d5d5d1;
+      --ink: #2f3136;
+      --shadow: 0 12px 34px rgba(0, 0, 0, 0.06);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #ffffff 0, var(--bg) 48%, #efefec 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", "Segoe UI", sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    .app {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 52px;
+    }
+
+    header { margin-bottom: 18px; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .mark, .auth-mark {
+      display: grid;
+      place-items: center;
+      overflow: visible;
+      flex: 0 0 auto;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      padding: 0;
+    }
+
+    .mark {
+      width: 51px;
+      height: 40px;
+    }
+
+    .auth-mark {
+      width: 82px;
+      height: 65px;
+      margin: 0 auto 14px;
+    }
+
+    .mark img, .auth-mark img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .brand .mark {
+      position: relative;
+      top: -4px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(25px, 4vw, 36px);
+      line-height: 1.12;
+      font-weight: 780;
+      letter-spacing: -0.04em;
+    }
+
+    .auth-screen {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 28px 18px;
+    }
+
+    .auth-card {
+      width: min(440px, 100%);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: rgba(255,255,255,0.86);
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    .auth-card h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.16;
+    }
+
+    .auth-card p {
+      margin: 10px 0 20px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .auth-form { display: grid; gap: 10px; }
+    .auth-form label { color: var(--muted); font-size: 13px; font-weight: 650; }
+
+    .password-row { display: flex; gap: 8px; }
+
+    .password-row input {
+      min-width: 0;
+      flex: 1;
+      height: 46px;
+      border: 1px solid var(--line-2);
+      border-radius: 14px;
+      padding: 0 13px;
+      font: inherit;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+    }
+
+    .password-row input:focus {
+      border-color: #8f8f89;
+      box-shadow: 0 0 0 4px rgba(32,33,35,0.07);
+    }
+
+    .auth-error {
+      min-height: 18px;
+      color: #6b2e2e;
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+
+    .auth-footnote {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: var(--muted-2);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .solid-btn, .delete-chip {
+      appearance: none;
+      border-radius: 999px;
+      font: inherit;
+      cursor: pointer;
+      transition: 0.16s ease;
+    }
+
+    .solid-btn {
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: #fff;
+      padding: 10px 15px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .delete-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      background: var(--card-2);
+      color: var(--muted);
+      border: 1px solid transparent;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .solid-btn:hover, .delete-chip:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+    }
+
+    .delete-chip:hover {
+      background: #e9e9e6;
+      color: var(--text);
+    }
+
+    .upload-shell { margin: 18px 0 20px; }
+
+    .dropzone {
+      min-height: 156px;
+      border: 1.5px dashed var(--line-2);
+      border-radius: var(--radius-xl);
+      background: rgba(255,255,255,0.78);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: 0.18s ease;
+      cursor: pointer;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: #8f8f89;
+      background: #fff;
+      transform: translateY(-1px);
+    }
+
+    .drop-inner strong {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .drop-inner span {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      margin-bottom: 16px;
+    }
+
+    input[type="file"] { display: none; }
+
+    .dashboard { display: none; }
+    .dashboard.show { display: block; }
+
+    .month-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .month-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: rgba(255,255,255,0.86);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .month-card summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      user-select: none;
+    }
+
+    .month-card summary::-webkit-details-marker { display: none; }
+
+    .month-title-wrap {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .month-toggle {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      background: var(--card-2);
+      border: 1px solid var(--line);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #4f5359;
+      flex: 0 0 36px;
+      padding: 0;
+      line-height: 1;
+      box-sizing: border-box;
+      transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .month-toggle svg {
+      width: 20px;
+      height: 20px;
+      display: block;
+      stroke: currentColor;
+      stroke-width: 2.35;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      transition: transform 0.18s ease;
+    }
+
+    .month-card[open] .month-toggle {
+      background: #e9e9e6;
+      color: var(--text);
+      border-color: #d8d8d4;
+    }
+
+    .month-card[open] .month-toggle svg {
+      transform: rotate(0deg);
+    }
+
+    .month-title {
+      margin: 0;
+      font-size: clamp(22px, 3vw, 30px);
+      letter-spacing: -0.04em;
+      line-height: 1.18;
+      font-weight: 820;
+      word-break: keep-all;
+    }
+
+    .month-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .month-body {
+      padding: 0 24px 24px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      background: rgba(255,255,255,0.84);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.035);
+      padding: 20px;
+      min-height: 128px;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .metric .value {
+      font-size: clamp(24px, 4vw, 34px);
+      font-weight: 820;
+      letter-spacing: -0.045em;
+      line-height: 1.04;
+    }
+
+    .metric .note {
+      margin-top: 11px;
+      color: var(--muted-2);
+      font-size: 12.5px;
+      line-height: 1.4;
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .panel {
+      background: rgba(255,255,255,0.84);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.035);
+      padding: 22px;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .panel h3 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: -0.03em;
+    }
+
+    .panel .hint {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+
+    .spend-chart {
+      display: grid;
+      gap: 12px;
+    }
+
+    .spend-row {
+      display: grid;
+      grid-template-columns: minmax(82px, 120px) minmax(0, 1fr) minmax(102px, auto);
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fbfbfa;
+    }
+
+    .spend-label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      word-break: keep-all;
+      line-height: 1.2;
+    }
+
+    .spend-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+      box-shadow: inset 0 0 0 1px rgba(32,33,35,0.08);
+    }
+
+    .spend-bar-track {
+      position: relative;
+      height: 36px;
+      border-radius: 999px;
+      background: #eeeeeb;
+      overflow: hidden;
+      border: 1px solid #e4e4df;
+    }
+
+    .spend-bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      min-width: 7px;
+      transition: width 0.35s ease;
+    }
+
+    .spend-percent {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #202123;
+      font-size: 14px;
+      font-weight: 850;
+      letter-spacing: -0.03em;
+      paint-order: stroke;
+    }
+
+    .spend-info {
+      display: grid;
+      gap: 3px;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .spend-amount {
+      font-size: 15px;
+      font-weight: 830;
+      letter-spacing: -0.035em;
+    }
+
+    .spend-count {
+      color: var(--muted);
+      font-size: 12.5px;
+      font-weight: 700;
+    }
+
+    .legend-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .legend-item {
+      display: grid;
+      gap: 8px;
+      padding: 14px;
+      background: #fbfbfa;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      min-width: 0;
+    }
+
+    .legend-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .legend-name-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1px rgba(32,33,35,0.08);
+      flex: 0 0 auto;
+    }
+
+    .legend-name {
+      font-weight: 760;
+      letter-spacing: -0.03em;
+      word-break: keep-all;
+      line-height: 1.25;
+    }
+
+    .legend-amount {
+      font-weight: 760;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    .category-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: var(--card-2);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 420px;
+      background: #fff;
+    }
+
+    thead th {
+      text-align: left;
+      background: #f4f4f2;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 12px 12px;
+      border-bottom: 1px solid var(--line);
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 13px 12px;
+      border-bottom: 1px solid var(--line);
+      font-size: 13.5px;
+      vertical-align: top;
+    }
+
+    tbody tr:last-child td { border-bottom: 0; }
+    .num { text-align: right; white-space: nowrap; }
+    .rank { color: var(--muted); width: 52px; }
+
+    .top-mobile-meta {
+      display: none;
+    }
+
+    .empty-state {
+      margin-top: 18px;
+      padding: 36px 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      text-align: center;
+      color: var(--muted);
+      background: rgba(255,255,255,0.6);
+    }
+
+    .empty-state strong {
+      display: block;
+      color: var(--text);
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .error {
+      display: none;
+      background: #fff;
+      border: 1px solid #d8d8d4;
+      border-left: 4px solid #202123;
+      border-radius: 16px;
+      padding: 14px 15px;
+      margin-bottom: 16px;
+      color: var(--text);
+      line-height: 1.5;
+      box-shadow: var(--shadow);
+    }
+
+    .error.show { display: block; }
+
+    footer {
+      margin-top: 26px;
+      color: var(--muted-2);
+      font-size: 12px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 920px) {
+      .app { width: min(100% - 22px, 720px); padding-top: 22px; }
+      .metric-grid { grid-template-columns: 1fr; }
+      .dropzone { min-height: 148px; padding: 22px 18px; }
+      .metric { min-height: auto; padding: 18px; }
+      .panel { padding: 18px; }
+      .spend-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .spend-info {
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .app { width: calc(100% - 18px); }
+      .auth-card { padding: 24px 20px; }
+      .password-row { display: grid; }
+      .password-row .solid-btn { width: 100%; }
+      .brand { align-items: center; gap: 10px; }
+      .mark { width: 47px; height: 37px; }
+      .brand .mark { top: -3px; }
+      .drop-inner strong { font-size: 18px; }
+      .month-card summary { padding: 22px 20px; }
+      .month-body { padding: 0 20px 20px; }
+      .month-title { font-size: 22px; line-height: 1.2; }
+      .month-toggle { width: 34px; height: 34px; flex-basis: 34px; }
+      .month-toggle svg { width: 19px; height: 19px; }
+      .delete-chip { padding: 7px 11px; font-size: 12.5px; }
+      .spend-row { padding: 13px; border-radius: 17px; }
+      .spend-bar-track { height: 38px; }
+      .spend-percent { font-size: 14.5px; }
+      .spend-label { font-size: 15.5px; }
+      .spend-amount { font-size: 15px; }
+      .legend-list { grid-template-columns: 1fr; }
+    }
+
+    .donut-section {
+      display: grid;
+      gap: 18px;
+    }
+
+    .donut-layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+      gap: 24px;
+      align-items: center;
+    }
+
+    .donut-visual {
+      width: min(100%, 380px);
+      aspect-ratio: 1 / 1;
+      position: relative;
+      margin: 0 auto;
+    }
+
+    .donut-visual svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
+    }
+
+    .donut-center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.98);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 13px;
+      box-shadow: inset 0 0 0 1px rgba(32,33,35,0.05), 0 10px 26px rgba(0,0,0,0.05);
+      pointer-events: none;
+    }
+
+    .donut-center strong {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 760;
+      margin-bottom: 6px;
+    }
+
+    .donut-center span {
+      display: block;
+      color: var(--text);
+      font-size: clamp(20px, 2.6vw, 27px);
+      font-weight: 880;
+      line-height: 1.08;
+      letter-spacing: -0.055em;
+    }
+
+    .category-side-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      align-content: center;
+      min-width: 0;
+    }
+
+    .category-side-card {
+      display: grid;
+      gap: 10px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fbfbfa;
+      min-width: 0;
+    }
+
+    .category-side-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .category-side-name {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+      font-size: 17px;
+      font-weight: 850;
+      line-height: 1.18;
+      letter-spacing: -0.045em;
+      word-break: keep-all;
+    }
+
+    .category-side-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+      box-shadow: inset 0 0 0 1px rgba(32,33,35,0.08);
+    }
+
+    .category-side-amount {
+      font-size: 16px;
+      font-weight: 850;
+      line-height: 1.15;
+      letter-spacing: -0.04em;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .category-side-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .category-side-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: var(--card-2);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 760;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .category-side-includes {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.42;
+      word-break: keep-all;
+    }
+
+    .donut-caption {
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .donut-slice {
+      transition: transform 0.16s ease, opacity 0.16s ease;
+      transform-origin: center;
+    }
+
+    .donut-slice:hover {
+      opacity: 0.88;
+      transform: scale(1.01);
+    }
+
+    .donut-slice-percent {
+      font-size: 10.8px;
+      font-weight: 880;
+      fill: #1F2329;
+      text-anchor: middle;
+      dominant-baseline: central;
+      paint-order: stroke;
+      stroke: rgba(255,255,255,0.97);
+      stroke-width: 3.2px;
+      stroke-linejoin: round;
+      letter-spacing: -0.04em;
+    }
+
+    .donut-slice-label {
+      font-size: 9.6px;
+      font-weight: 850;
+      fill: #1F2329;
+      text-anchor: middle;
+      dominant-baseline: central;
+      paint-order: stroke;
+      stroke: rgba(255,255,255,0.96);
+      stroke-width: 3px;
+      stroke-linejoin: round;
+      letter-spacing: -0.04em;
+    }
+
+    @media (max-width: 920px) {
+      .donut-layout {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .donut-visual {
+        width: min(100%, 360px);
+      }
+
+      .category-side-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 520px) {
+      .donut-visual {
+        width: min(100%, 320px);
+      }
+
+      .category-side-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .category-side-card {
+        padding: 13px;
+      }
+
+      .category-side-name {
+        font-size: 16.5px;
+      }
+
+      .category-side-amount {
+        font-size: 15.5px;
+      }
+
+      .category-side-pill {
+        font-size: 12.8px;
+      }
+
+      .donut-center strong {
+        font-size: 13px;
+      }
+
+      .donut-center span {
+        font-size: 20px;
+      }
+
+      .donut-slice-percent {
+      font-size: 10.8px;
+      font-weight: 880;
+      fill: #1F2329;
+      text-anchor: middle;
+      dominant-baseline: central;
+      paint-order: stroke;
+      stroke: rgba(255,255,255,0.97);
+      stroke-width: 3.2px;
+      stroke-linejoin: round;
+      letter-spacing: -0.04em;
+    }
+
+    .donut-slice-label {
+        font-size: 10.2px;
+      }
+    }
+
+
+    .category-side-progress {
+      display: grid;
+      gap: 7px;
+      margin-top: 2px;
+    }
+
+    .category-side-progress-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 12.8px;
+      font-weight: 760;
+      line-height: 1.1;
+    }
+
+    .category-side-progress-label {
+      color: var(--muted);
+    }
+
+    .category-side-progress-value {
+      color: var(--text);
+      font-weight: 820;
+      letter-spacing: -0.03em;
+    }
+
+    .category-side-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: #eeeeeb;
+      border: 1px solid #e4e4df;
+      overflow: hidden;
+    }
+
+    .category-side-bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      min-width: 4px;
+      transition: width 0.35s ease;
+    }
+
+
+    .hint:empty,
+    .donut-caption:empty {
+      display: none;
+    }
+
+
+    @media (max-width: 520px) {
+      .table-wrap {
+        overflow: visible;
+        border: 0;
+        border-radius: 0;
+      }
+
+      table {
+        min-width: 0;
+        width: 100%;
+        background: transparent;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tbody {
+        display: grid;
+        gap: 10px;
+      }
+
+      tbody tr {
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr) auto;
+        grid-template-areas:
+          "rank main amount"
+          "rank meta amount";
+        gap: 4px 10px;
+        align-items: center;
+        padding: 13px 14px;
+        border: 1px solid var(--line);
+        border-radius: 17px;
+        background: #fbfbfa;
+      }
+
+      tbody td {
+        padding: 0;
+        border: 0;
+        font-size: 13.5px;
+      }
+
+      tbody td.rank {
+        grid-area: rank;
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
+        background: #f3f3f0;
+        border: 1px solid transparent;
+        display: grid;
+        place-items: center;
+        color: #666a70;
+        font-weight: 760;
+        font-size: 12.5px;
+        letter-spacing: -0.01em;
+      }
+
+      tbody td.top-item {
+        grid-area: main;
+        min-width: 0;
+        font-size: 15px;
+        font-weight: 820;
+        letter-spacing: -0.035em;
+        line-height: 1.22;
+        word-break: keep-all;
+        display: grid;
+        gap: 3px;
+      }
+
+      .top-mobile-meta {
+        display: block;
+        color: var(--muted);
+        font-size: 12.8px;
+        font-weight: 650;
+        line-height: 1.25;
+        letter-spacing: -0.02em;
+      }
+
+      tbody td.top-category,
+      tbody td.top-count {
+        display: none;
+      }
+
+      tbody td.top-amount {
+        grid-area: amount;
+        align-self: center;
+        text-align: right;
+        font-size: 14.5px;
+        font-weight: 850;
+        letter-spacing: -0.035em;
+        white-space: nowrap;
+      }
+    }
+
+
+    .donut-layout {
+      grid-template-columns: 1fr !important;
+      gap: 20px !important;
+      align-items: center;
+    }
+
+    .donut-visual {
+      width: min(100%, 520px) !important;
+      margin: 0 auto;
+    }
+
+    .donut-slice-label {
+      font-size: 8.8px !important;
+      font-weight: 850;
+      fill: #1F2329;
+      text-anchor: middle;
+      dominant-baseline: central;
+      paint-order: stroke;
+      stroke: rgba(255,255,255,0.97);
+      stroke-width: 2.7px;
+      stroke-linejoin: round;
+      letter-spacing: -0.04em;
+    }
+
+    .donut-slice-percent {
+      font-size: 9.5px !important;
+      font-weight: 880;
+      fill: #1F2329;
+      text-anchor: middle;
+      dominant-baseline: central;
+      paint-order: stroke;
+      stroke: rgba(255,255,255,0.97);
+      stroke-width: 2.8px;
+      stroke-linejoin: round;
+      letter-spacing: -0.04em;
+    }
+
+    .category-side-grid {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+      width: 100%;
+    }
+
+    @media (max-width: 920px) {
+      .donut-visual {
+        width: min(100%, 460px) !important;
+      }
+
+      .category-side-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .donut-visual {
+        width: min(100%, 360px) !important;
+      }
+
+      .donut-slice-label {
+        font-size: 8.4px !important;
+        stroke-width: 2.6px;
+      }
+
+      .donut-slice-percent {
+        font-size: 9.1px !important;
+        stroke-width: 2.7px;
+      }
+
+      .category-side-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+
+    .donut-center span {
+      font-size: clamp(21px, 2.6vw, 28px) !important;
+    }
+
+    .donut-center strong {
+      font-size: 14px !important;
+    }
+
+    @media (max-width: 520px) {
+      .donut-center span {
+        font-size: 21px !important;
+      }
+
+      .donut-center strong {
+        font-size: 13px !important;
+      }
+    }
+
+
+    .category-side-includes {
+      color: #7c8189 !important;
+      font-size: 12.6px !important;
+      line-height: 1.45 !important;
+      font-weight: 520 !important;
+    }
+
+    .category-side-card {
+      gap: 11px !important;
+    }
+
+    .category-side-name {
+      font-size: 16.5px !important;
+    }
+
+    .category-side-amount {
+      font-size: 17px !important;
+      font-weight: 880 !important;
+    }
+
+    .category-side-progress {
+      margin-top: 0 !important;
+    }
+
+    .category-side-progress-label {
+      font-size: 12.5px !important;
+      font-weight: 680 !important;
+    }
+
+    .category-side-progress-value {
+      font-size: 12.8px !important;
+      font-weight: 820 !important;
+    }
+
+    .category-side-bar {
+      height: 7px !important;
+      background: #efefec !important;
+    }
+
+    .panel .hint,
+    .donut-caption:empty,
+    .hint:empty {
+      display: none !important;
+    }
+
+
+    .month-summary-mini {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: var(--card-2);
+      color: var(--muted);
+      font-size: 12.5px;
+      font-weight: 720;
+      white-space: nowrap;
+    }
+
+    .month-summary-mini strong {
+      color: var(--text);
+      font-weight: 850;
+    }
+
+    @media (max-width: 520px) {
+      .month-summary-mini {
+        display: none;
+      }
+    }
+
+
+    /* Final polish: ChatGPT-style button consistency + mobile month summary */
+    .solid-btn,
+    .delete-chip,
+    .month-toggle,
+    .month-summary-mini {
+      box-sizing: border-box;
+      border-width: 1px !important;
+      border-style: solid !important;
+      border-radius: 999px !important;
+      box-shadow: none;
+    }
+
+    .solid-btn {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-color: var(--ink) !important;
+      background: var(--ink) !important;
+      color: #fff !important;
+      padding: 9px 15px !important;
+      font-size: 14px !important;
+      font-weight: 760 !important;
+      letter-spacing: -0.015em;
+    }
+
+    .solid-btn:hover {
+      background: #34332f !important;
+      border-color: #34332f !important;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+    }
+
+    .delete-chip {
+      min-height: 34px;
+      background: #fff5f3 !important;
+      border-color: #f0d6d2 !important;
+      color: #9c342d !important;
+      padding: 7px 12px !important;
+      font-size: 12.8px !important;
+      font-weight: 760 !important;
+      letter-spacing: -0.015em;
+    }
+
+    .delete-chip:hover {
+      background: #ffecea !important;
+      border-color: #e9c4bf !important;
+      color: #83271f !important;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(131,39,31,0.08);
+    }
+
+    .month-toggle {
+      background: #f7f7f5 !important;
+      border-color: var(--line) !important;
+      color: #55575c !important;
+    }
+
+    .month-card[open] .month-toggle {
+      background: #eeeeeb !important;
+      border-color: #d9d9d5 !important;
+      color: var(--text) !important;
+    }
+
+    .month-summary-mini {
+      min-height: 34px;
+      background: #f7f7f5 !important;
+      border-color: var(--line) !important;
+      color: #6b7078 !important;
+      padding: 7px 11px !important;
+      font-size: 12.6px !important;
+      font-weight: 720 !important;
+      letter-spacing: -0.02em;
+    }
+
+    .month-summary-mini strong {
+      color: #202123 !important;
+      font-weight: 860 !important;
+    }
+
+    .month-card summary {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas: "title actions";
+      align-items: center;
+      column-gap: 14px;
+      row-gap: 9px;
+    }
+
+    .month-title-wrap {
+      grid-area: title;
+    }
+
+    .month-actions {
+      grid-area: actions;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .month-card summary:hover .month-toggle {
+      background: #eeeeeb !important;
+      border-color: #d8d8d4 !important;
+    }
+
+    .dropzone {
+      border-color: #deded8 !important;
+      background: rgba(255,255,255,0.82) !important;
+    }
+
+    .dropzone:hover,
+    .dropzone.dragover {
+      border-color: #b9b9b2 !important;
+      background: #fff !important;
+    }
+
+    @media (max-width: 520px) {
+      .month-card summary {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+          "title actions"
+          "mini mini";
+        padding: 21px 18px 18px !important;
+        column-gap: 10px;
+        row-gap: 9px;
+      }
+
+      .month-title-wrap {
+        min-width: 0;
+        gap: 9px !important;
+      }
+
+      .month-title {
+        font-size: 20.5px !important;
+        line-height: 1.2 !important;
+        letter-spacing: -0.045em;
+      }
+
+      .month-actions {
+        display: contents !important;
+      }
+
+      .month-summary-mini {
+        grid-area: mini;
+        display: inline-flex !important;
+        justify-self: start;
+        max-width: calc(100vw - 72px);
+        min-height: 31px;
+        margin-left: 43px;
+        padding: 6px 10px !important;
+        font-size: 12.3px !important;
+      }
+
+      .month-summary-mini strong {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+        vertical-align: bottom;
+      }
+
+      .delete-chip {
+        grid-area: actions;
+        justify-self: end;
+        min-height: 31px;
+        padding: 6px 10px !important;
+        font-size: 12.3px !important;
+      }
+
+      .solid-btn {
+        width: 100%;
+        min-height: 42px;
+      }
+    }
+
+
+    /* Refined minimal style: remove chip-heavy/tacky look */
+    .month-card {
+      background: rgba(255,255,255,0.9) !important;
+      border-color: #e5e5df !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.045) !important;
+    }
+
+    .month-card summary {
+      border-bottom: 1px solid transparent;
+    }
+
+    .month-card[open] summary {
+      border-bottom-color: #f0f0ec;
+    }
+
+    .solid-btn {
+      border-radius: 11px !important;
+      min-height: 40px;
+      border: 1px solid #202123 !important;
+      background: #202123 !important;
+      color: #fff !important;
+      padding: 9px 15px !important;
+      font-size: 14px !important;
+      font-weight: 720 !important;
+      letter-spacing: -0.015em;
+      box-shadow: none !important;
+    }
+
+    .solid-btn:hover {
+      background: #2f302d !important;
+      border-color: #2f302d !important;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.10) !important;
+    }
+
+    .month-toggle {
+      width: 32px !important;
+      height: 32px !important;
+      flex: 0 0 32px !important;
+      border-radius: 10px !important;
+      border-color: transparent !important;
+      background: transparent !important;
+      color: #666a70 !important;
+    }
+
+    .month-toggle svg {
+      width: 19px !important;
+      height: 19px !important;
+      stroke-width: 2.2 !important;
+    }
+
+    .month-card summary:hover .month-toggle,
+    .month-card[open] .month-toggle {
+      background: #f3f3f0 !important;
+      border-color: transparent !important;
+      color: #202123 !important;
+    }
+
+    .delete-chip {
+      min-height: 32px !important;
+      border-radius: 10px !important;
+      border-color: transparent !important;
+      background: transparent !important;
+      color: #8a8f98 !important;
+      padding: 6px 9px !important;
+      font-size: 12.6px !important;
+      font-weight: 690 !important;
+      letter-spacing: -0.015em;
+      box-shadow: none !important;
+    }
+
+    .delete-chip:hover {
+      background: #f4f4f1 !important;
+      border-color: transparent !important;
+      color: #5f646b !important;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .month-summary-mini {
+      min-height: 0 !important;
+      border: 0 !important;
+      background: transparent !important;
+      padding: 0 !important;
+      color: #8a8f98 !important;
+      font-size: 12.8px !important;
+      font-weight: 640 !important;
+      letter-spacing: -0.02em;
+    }
+
+    .month-summary-mini strong {
+      color: #4b4f56 !important;
+      font-weight: 760 !important;
+    }
+
+    .month-actions {
+      gap: 14px !important;
+    }
+
+    .metric,
+    .panel,
+    .category-side-card,
+    tbody tr {
+      box-shadow: none !important;
+      border-color: #e8e8e2 !important;
+    }
+
+    .metric {
+      background: #ffffff !important;
+    }
+
+    .panel {
+      background: #ffffff !important;
+    }
+
+    .category-side-card {
+      background: #fbfbfa !important;
+    }
+
+    .category-side-includes {
+      color: #90949b !important;
+    }
+
+    .dropzone {
+      border-radius: 22px !important;
+      background: #ffffff !important;
+      border: 1px dashed #d8d8d2 !important;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.035) !important;
+    }
+
+    .dropzone:hover,
+    .dropzone.dragover {
+      border-color: #bdbdb6 !important;
+      background: #ffffff !important;
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 520px) {
+      .month-card summary {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+          "title actions"
+          "mini mini";
+        padding: 20px 18px 17px !important;
+        column-gap: 8px;
+        row-gap: 7px;
+      }
+
+      .month-title-wrap {
+        gap: 7px !important;
+      }
+
+      .month-title {
+        font-size: 20px !important;
+        line-height: 1.18 !important;
+      }
+
+      .month-toggle {
+        width: 30px !important;
+        height: 30px !important;
+        flex-basis: 30px !important;
+        margin-left: -4px;
+      }
+
+      .month-actions {
+        display: contents !important;
+      }
+
+      .delete-chip {
+        grid-area: actions;
+        justify-self: end;
+        min-height: 30px !important;
+        padding: 5px 8px !important;
+        font-size: 12.2px !important;
+      }
+
+      .month-summary-mini {
+        grid-area: mini;
+        display: inline-flex !important;
+        justify-self: start;
+        margin-left: 34px;
+        max-width: calc(100vw - 70px);
+        font-size: 12.4px !important;
+        line-height: 1.2;
+      }
+
+      .month-summary-mini::before {
+        content: "";
+        width: 3px;
+        height: 3px;
+        border-radius: 999px;
+        background: #b8bbb8;
+        display: inline-block;
+        margin: 0 7px 1px 0;
+      }
+
+      .month-summary-mini strong {
+        max-width: 160px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+        vertical-align: bottom;
+      }
+
+      .solid-btn {
+        border-radius: 11px !important;
+      }
+    }
+
+
+    /* Clean header action polish */
+    .month-card summary,
+    .month-card[open] summary {
+      border-bottom: 0 !important;
+      box-shadow: none !important;
+    }
+
+    .month-card summary {
+      padding-bottom: 20px !important;
+    }
+
+    .month-card[open] .month-body {
+      padding-top: 0 !important;
+    }
+
+    .month-title-wrap {
+      gap: 10px !important;
+    }
+
+    .month-actions {
+      gap: 10px !important;
+      align-items: center !important;
+    }
+
+    .month-toggle,
+    .delete-chip {
+      width: 32px;
+      height: 32px;
+      min-height: 32px !important;
+      flex: 0 0 32px;
+      padding: 0 !important;
+      border-radius: 10px !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: none !important;
+      transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+    }
+
+    .month-toggle {
+      background: #f3f3f0 !important;
+      border: 1px solid transparent !important;
+      color: #5d6168 !important;
+    }
+
+    .month-card summary:hover .month-toggle,
+    .month-card[open] .month-toggle {
+      background: #efefec !important;
+      border-color: transparent !important;
+      color: #202123 !important;
+    }
+
+    .month-toggle svg {
+      width: 18px !important;
+      height: 18px !important;
+      display: block;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .delete-chip {
+      background: transparent !important;
+      border: 1px solid transparent !important;
+      color: #8a8f98 !important;
+    }
+
+    .delete-chip svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+      stroke: currentColor;
+      stroke-width: 2.1;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .delete-chip:hover {
+      background: #f4f4f1 !important;
+      border-color: transparent !important;
+      color: #5f646b !important;
+      transform: none !important;
+    }
+
+    .month-summary-mini {
+      margin-right: 2px;
+      font-size: 12.6px !important;
+      white-space: nowrap;
+    }
+
+    .month-summary-mini strong {
+      letter-spacing: -0.02em;
+    }
+
+    @media (max-width: 520px) {
+      .month-card summary {
+        padding-top: 18px !important;
+        padding-bottom: 16px !important;
+      }
+
+      .month-title-wrap {
+        gap: 8px !important;
+      }
+
+      .month-toggle,
+      .delete-chip {
+        width: 30px;
+        height: 30px;
+        min-height: 30px !important;
+        flex-basis: 30px;
+        border-radius: 9px !important;
+      }
+
+      .month-toggle svg {
+        width: 17px !important;
+        height: 17px !important;
+      }
+
+      .delete-chip svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      .month-summary-mini {
+        margin-left: 38px !important;
+        font-size: 12.3px !important;
+      }
+    }
+
+
+    /* Donut label polish: readable but less sticker-like */
+    .donut-slice-label {
+      fill: #50545c !important;
+      font-weight: 720 !important;
+      font-size: 8.5px !important;
+      letter-spacing: -0.035em !important;
+      paint-order: stroke;
+      stroke: rgba(255,255,255,0.72) !important;
+      stroke-width: 1.15px !important;
+      stroke-linejoin: round;
+    }
+
+    .donut-slice-percent {
+      fill: #24262b !important;
+      font-weight: 790 !important;
+      font-size: 9.15px !important;
+      letter-spacing: -0.035em !important;
+      paint-order: stroke;
+      stroke: rgba(255,255,255,0.76) !important;
+      stroke-width: 1.25px !important;
+      stroke-linejoin: round;
+    }
+
+    .donut-center strong {
+      color: #6f747c !important;
+      font-weight: 690 !important;
+    }
+
+    .donut-center span {
+      color: #202123 !important;
+      font-weight: 820 !important;
+    }
+
+    @media (max-width: 520px) {
+      .donut-slice-label {
+        font-size: 8.1px !important;
+        stroke-width: 1.1px !important;
+      }
+
+      .donut-slice-percent {
+        font-size: 8.8px !important;
+        stroke-width: 1.2px !important;
+      }
+    }
+
+
+    /* 펼친 월 카드에서는 총지출 미니 표시 숨김 */
+    .month-card[open] .month-summary-mini {
+      display: none !important;
+    }
+
+    @media (max-width: 520px) {
+      .month-card[open] .month-summary-mini {
+        display: none !important;
+      }
+    }
+
+
+    /* Mobile month header: total spend inline on the right */
+    @media (max-width: 520px) {
+      .month-card summary {
+        grid-template-columns: minmax(0, 1fr) auto auto !important;
+        grid-template-areas: "title mini actions" !important;
+        align-items: center !important;
+        column-gap: 10px !important;
+        row-gap: 0 !important;
+        padding: 18px 18px !important;
+      }
+
+      .month-title-wrap {
+        min-width: 0;
+        gap: 8px !important;
+      }
+
+      .month-title {
+        font-size: 19px !important;
+        line-height: 1.18 !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .month-actions {
+        display: contents !important;
+      }
+
+      .month-summary-mini {
+        grid-area: mini !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-self: end !important;
+        margin: 0 !important;
+        max-width: none !important;
+        min-height: auto !important;
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+        font-size: 11.8px !important;
+        line-height: 1.2 !important;
+        white-space: nowrap !important;
+        color: #8a8f98 !important;
+      }
+
+      .month-summary-mini::before {
+        content: none !important;
+      }
+
+      .month-summary-mini strong {
+        max-width: none !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        white-space: nowrap !important;
+        display: inline !important;
+        color: #4b4f56 !important;
+        font-size: 12.2px !important;
+      }
+
+      .delete-chip {
+        grid-area: actions !important;
+        justify-self: end !important;
+        width: 28px !important;
+        height: 28px !important;
+        min-height: 28px !important;
+        flex-basis: 28px !important;
+        padding: 0 !important;
+      }
+
+      .delete-chip svg {
+        width: 14px !important;
+        height: 14px !important;
+      }
+
+      .month-toggle {
+        width: 28px !important;
+        height: 28px !important;
+        flex-basis: 28px !important;
+      }
+
+      .month-toggle svg {
+        width: 16px !important;
+        height: 16px !important;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .month-card summary {
+        column-gap: 8px !important;
+      }
+
+      .month-title {
+        font-size: 18px !important;
+      }
+
+      .month-summary-mini {
+        font-size: 11.2px !important;
+      }
+
+      .month-summary-mini strong {
+        font-size: 11.6px !important;
+      }
+    }
+
+
+    @media (max-width: 520px) {
+      tbody td.rank {
+        box-shadow: none !important;
+      }
+    }
+
+
+    /* Donut chart premium refresh */
+    .donut-visual {
+      width: min(100%, 540px) !important;
+    }
+
+    .donut-center {
+      width: 54% !important;
+      background: rgba(255,255,255,0.985) !important;
+      box-shadow: inset 0 0 0 1px rgba(32,33,35,0.04), 0 6px 18px rgba(0,0,0,0.035) !important;
+    }
+
+    .donut-center strong {
+      color: #757b83 !important;
+      font-size: 13.5px !important;
+      font-weight: 680 !important;
+      letter-spacing: -0.02em;
+      margin-bottom: 7px !important;
+    }
+
+    .donut-center span {
+      color: #202123 !important;
+      font-size: clamp(21px, 2.4vw, 29px) !important;
+      font-weight: 830 !important;
+      letter-spacing: -0.055em !important;
+    }
+
+    .donut-slice-label {
+      fill: #52565D !important;
+      font-weight: 700 !important;
+      font-size: 8.2px !important;
+      letter-spacing: -0.03em !important;
+      paint-order: stroke;
+      stroke: rgba(255,255,255,0.58) !important;
+      stroke-width: 0.78px !important;
+      stroke-linejoin: round;
+    }
+
+    .donut-slice-percent {
+      fill: #23262B !important;
+      font-weight: 790 !important;
+      font-size: 8.8px !important;
+      letter-spacing: -0.03em !important;
+      paint-order: stroke;
+      stroke: rgba(255,255,255,0.6) !important;
+      stroke-width: 0.84px !important;
+      stroke-linejoin: round;
+    }
+
+    .category-side-card {
+      background: #fcfcfb !important;
+      border-color: #ebeae5 !important;
+    }
+
+    .category-side-bar {
+      background: #efeee9 !important;
+      border-color: #ecebe6 !important;
+      height: 6px !important;
+    }
+
+    @media (max-width: 520px) {
+      .donut-visual {
+        width: min(100%, 372px) !important;
+      }
+
+      .donut-center {
+        width: 55% !important;
+      }
+
+      .donut-center strong {
+        font-size: 12.8px !important;
+      }
+
+      .donut-center span {
+        font-size: 20px !important;
+      }
+
+      .donut-slice-label {
+        font-size: 7.8px !important;
+        stroke-width: 0.72px !important;
+      }
+
+      .donut-slice-percent {
+        font-size: 8.35px !important;
+        stroke-width: 0.78px !important;
+      }
+    }
+
+
+    /* Refine donut label colors: item and percent feel unified */
+    .donut-slice-label,
+    .donut-slice-percent {
+      fill: #434850 !important;
+      paint-order: stroke;
+      stroke: rgba(255,255,255,0.52) !important;
+      stroke-linejoin: round;
+      letter-spacing: -0.03em !important;
+    }
+
+    .donut-slice-label {
+      font-weight: 710 !important;
+      stroke-width: 0.72px !important;
+      opacity: 0.98;
+    }
+
+    .donut-slice-percent {
+      font-weight: 790 !important;
+      stroke-width: 0.78px !important;
+      opacity: 1;
+    }
+
+    @media (max-width: 520px) {
+      .donut-slice-label {
+        stroke-width: 0.68px !important;
+      }
+
+      .donut-slice-percent {
+        stroke-width: 0.74px !important;
+      }
+    }
+
+
+    /* Donut text clipping fix: keep graph shape normal, stop center layer from cutting labels */
+    .donut-center {
+      width: 46% !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      z-index: 2;
+    }
+
+    .donut-center strong {
+      color: #737982 !important;
+      font-weight: 680 !important;
+    }
+
+    .donut-center span {
+      color: #202123 !important;
+      font-weight: 830 !important;
+    }
+
+    .donut-slice-label,
+    .donut-slice-percent {
+      fill: #3f444c !important;
+      stroke: rgba(255,255,255,0.55) !important;
+      stroke-linejoin: round;
+    }
+
+    .donut-slice-label {
+      font-size: 8.05px !important;
+      font-weight: 710 !important;
+      stroke-width: 0.72px !important;
+    }
+
+    .donut-slice-percent {
+      font-size: 8.6px !important;
+      font-weight: 790 !important;
+      stroke-width: 0.78px !important;
+    }
+
+    @media (max-width: 520px) {
+      .donut-center {
+        width: 47% !important;
+      }
+
+      .donut-slice-label {
+        font-size: 7.75px !important;
+      }
+
+      .donut-slice-percent {
+        font-size: 8.25px !important;
+      }
+    }
+
+
+    /* Donut label clarity boost: sharper and more readable */
+    .donut-slice-label,
+    .donut-slice-percent {
+      text-rendering: geometricPrecision;
+      -webkit-font-smoothing: antialiased;
+      paint-order: stroke fill;
+    }
+
+    .donut-slice-label {
+      fill: #3A3F47 !important;
+      font-weight: 735 !important;
+      font-size: 8.15px !important;
+      stroke: rgba(255,255,255,0.74) !important;
+      stroke-width: 0.95px !important;
+      letter-spacing: -0.028em !important;
+    }
+
+    .donut-slice-percent {
+      fill: #202328 !important;
+      font-weight: 820 !important;
+      font-size: 8.72px !important;
+      stroke: rgba(255,255,255,0.76) !important;
+      stroke-width: 1.02px !important;
+      letter-spacing: -0.028em !important;
+    }
+
+    @media (max-width: 520px) {
+      .donut-slice-label {
+        font-size: 7.9px !important;
+        stroke-width: 0.9px !important;
+      }
+
+      .donut-slice-percent {
+        font-size: 8.45px !important;
+        stroke-width: 0.98px !important;
+      }
+    }
+
+
+    /* Donut text refinement: same color family + less white stroke + subtle shadow */
+    .donut-slice-label,
+    .donut-slice-percent {
+      fill: #373C43 !important;
+      stroke: rgba(255,255,255,0.22) !important;
+      stroke-linejoin: round;
+      paint-order: stroke fill;
+      text-rendering: geometricPrecision;
+      text-shadow: 0 0 0.8px rgba(255,255,255,0.18);
+      letter-spacing: -0.026em !important;
+    }
+
+    .donut-slice-label {
+      font-weight: 735 !important;
+      font-size: 8.18px !important;
+      stroke-width: 0.34px !important;
+      opacity: 0.98;
+    }
+
+    .donut-slice-percent {
+      font-weight: 810 !important;
+      font-size: 8.74px !important;
+      stroke-width: 0.36px !important;
+      opacity: 1;
+    }
+
+    @media (max-width: 520px) {
+      .donut-slice-label {
+        font-size: 7.92px !important;
+        stroke-width: 0.32px !important;
+      }
+
+      .donut-slice-percent {
+        font-size: 8.46px !important;
+        stroke-width: 0.34px !important;
+      }
+    }
+
+
+    /* Automatic contrast labels for donut slices */
+    .donut-slice-label,
+    .donut-slice-percent {
+      text-rendering: geometricPrecision;
+      -webkit-font-smoothing: antialiased;
+      dominant-baseline: central;
+      text-anchor: middle;
+      paint-order: stroke fill;
+      letter-spacing: -0.026em !important;
+    }
+
+    .donut-slice-label {
+      font-size: 8.12px !important;
+      font-weight: 730 !important;
+      stroke-width: 0.34px !important;
+    }
+
+    .donut-slice-percent {
+      font-size: 8.7px !important;
+      font-weight: 810 !important;
+      stroke-width: 0.36px !important;
+    }
+
+    @media (max-width: 520px) {
+      .donut-slice-label {
+        font-size: 7.88px !important;
+      }
+
+      .donut-slice-percent {
+        font-size: 8.42px !important;
+      }
+    }
+
+
+    /* Final donut label contrast: CSS-important safe */
+    .donut-slice-label,
+    .donut-slice-percent {
+      text-rendering: geometricPrecision !important;
+      -webkit-font-smoothing: antialiased !important;
+      dominant-baseline: central !important;
+      text-anchor: middle !important;
+      paint-order: stroke fill !important;
+      letter-spacing: -0.026em !important;
+    }
+
+    .donut-slice-label {
+      font-size: 8.1px !important;
+      font-weight: 735 !important;
+      stroke-width: 0.42px !important;
+    }
+
+    .donut-slice-percent {
+      font-size: 8.72px !important;
+      font-weight: 815 !important;
+      stroke-width: 0.46px !important;
+    }
+
+    .donut-label-light {
+      fill: #F6F7F7 !important;
+      stroke: rgba(18, 22, 28, 0.36) !important;
+    }
+
+    .donut-label-dark {
+      fill: #353A42 !important;
+      stroke: rgba(255, 255, 255, 0.22) !important;
+    }
+
+    @media (max-width: 520px) {
+      .donut-slice-label {
+        font-size: 7.88px !important;
+      }
+
+      .donut-slice-percent {
+        font-size: 8.45px !important;
+      }
+    }
+
+
+    /* Inner donut label edge alignment */
+    .donut-slice-label,
+    .donut-slice-percent {
+      letter-spacing: -0.024em !important;
+    }
+
+
+    /* Donut labels v3: compact premium callouts */
+    .donut-visual svg {
+      overflow: visible !important;
+    }
+
+    .donut-label-line {
+      fill: none;
+      stroke-width: 1.38px;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.46;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .donut-label-chip rect {
+      fill: rgba(255, 255, 255, 0.985);
+      stroke: rgba(230, 226, 217, 0.98);
+      stroke-width: 0.84px;
+      filter: drop-shadow(0 6px 14px rgba(17, 24, 39, 0.07));
+    }
+
+    .donut-label-dot {
+      filter: drop-shadow(0 1px 1px rgba(0,0,0,0.05));
+    }
+
+    .donut-label-text,
+    .donut-label-percent {
+      dominant-baseline: central;
+      paint-order: stroke fill;
+      stroke-linejoin: round;
+      text-rendering: geometricPrecision;
+      -webkit-font-smoothing: antialiased;
+      letter-spacing: -0.008em;
+    }
+
+    .donut-label-text {
+      fill: #59636E;
+      stroke: rgba(255, 255, 255, 0.68);
+      font-size: 7.4px;
+      font-weight: 760;
+      stroke-width: 0.18px;
+    }
+
+    .donut-label-percent {
+      fill: #1F2329;
+      stroke: rgba(255, 255, 255, 0.72);
+      font-size: 8.9px;
+      font-weight: 885;
+      stroke-width: 0.22px;
+    }
+
+    @media (max-width: 520px) {
+      .donut-label-text {
+        font-size: 7.0px;
+      }
+
+      .donut-label-percent {
+        font-size: 8.2px;
+      }
+    }
+
+    /* TOP10 card tone refinement */
+    .table-wrap tbody tr {
+      background: #FCFCFB !important;
+    }
+
+    .table-wrap tbody td.rank {
+      background: transparent !important;
+      color: #3F4650 !important;
+      font-weight: 820 !important;
+    }
+
+    @media (max-width: 520px) {
+      .table-wrap tbody tr {
+        background: #FCFCFB !important;
+        border-color: #E5E5DF !important;
+      }
+
+      .table-wrap tbody td.rank {
+        background: #F1F1EF !important;
+        color: #3F4650 !important;
+        font-weight: 820 !important;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <section class="auth-screen" id="authScreen" aria-label="비밀번호 입력 화면">
+    <div class="auth-card">
+      <div class="auth-mark" aria-hidden="true"><img src="pig-logo-square.png" alt="" /></div>
+      <h1>꿀꿀 부부 가계부</h1>
+      <p>비밀번호를 입력하면 엑셀 업로드 화면이 열려요. 업로드한 파일은 서버로 전송되지 않고 브라우저 안에서만 처리됩니다.</p>
+      <form class="auth-form" id="authForm">
+        <label for="passwordInput">비밀번호</label>
+        <div class="password-row">
+          <input id="passwordInput" type="password" autocomplete="current-password" placeholder="비밀번호 입력" />
+          <button class="solid-btn" type="submit">열기</button>
+        </div>
+        <div class="auth-error" id="authError" role="alert"></div>
+      </form>
+      <div class="auth-footnote">실제 가계부 엑셀 파일은 GitHub에 올리지 말고, 페이지에서 직접 업로드해서 확인해요.</div>
+    </div>
+  </section>
+
+  <main class="app" id="appShell" hidden>
+    <header>
+      <div class="brand">
+        <div class="mark" aria-hidden="true"><img src="pig-logo-square.png" alt="" /></div>
+        <h1>꿀꿀 부부 가계부</h1>
+      </div>
+    </header>
+
+    <section class="upload-shell" aria-label="파일 업로드 영역">
+      <label class="dropzone" id="dropzone" for="fileInput">
+        <div class="drop-inner">
+          <strong>가계부 엑셀 파일 업로드</strong>
+          <span>.xlsx 파일을 선택하거나 여기로 끌어다 놓으면 한눈요약을 불러와요.</span>
+          <button class="solid-btn" type="button" id="pickButton">파일 선택</button>
+        </div>
+      </label>
+      <input id="fileInput" type="file" accept=".xlsx,.xls" />
+    </section>
+
+    <div class="error" id="errorBox" role="alert"></div>
+
+    <section class="dashboard" id="dashboard" aria-label="한눈요약 대시보드">
+      <div class="month-list" id="monthList"></div>
+    </section>
+
+    <section class="empty-state" id="emptyState">
+      <strong>아직 불러온 가계부가 없어요</strong>
+      <span>위에서 가계부 파일을 올리면 한눈요약 내용이 여기에 표시돼요.</span>
+    </section>
+
+    <footer>
+      업로드한 엑셀 파일은 서버로 전송되지 않고 브라우저 안에서 처리됩니다.
+    </footer>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'householdSummary:monthlySummaries';
+    const AUTH_KEY = 'householdSummary:unlocked';
+    const PASSWORD_HASH = '5c83a242f110d58c915bc145a93f7bad5ff8a77e717a47716814dc70781c39df';
+    const CHART_COLORS = ['#2E3642', '#7FA271', '#6F92D7', '#AC97D2', '#CAA654', '#C47B63', '#5C98A5', '#C487A4', '#8F9FB6', '#B7A06A'];
+    const CATEGORY_COLORS = {
+      '고정비': '#2E3642',
+      '뷰티/쇼핑': '#C487A4',
+      '식비': '#6F92D7',
+      '의료비': '#AC97D2',
+      '문화/여가': '#CAA654',
+      '생활비': '#7FA271',
+      '교통/차량': '#5C98A5',
+      '여행/숙박': '#C47B63',
+      '주거': '#8F9FB6',
+      '기타': '#B7A06A'
+    };
+
+    const authScreen = document.getElementById('authScreen');
+    const appShell = document.getElementById('appShell');
+    const authForm = document.getElementById('authForm');
+    const passwordInput = document.getElementById('passwordInput');
+    const authError = document.getElementById('authError');
+    const fileInput = document.getElementById('fileInput');
+    const dropzone = document.getElementById('dropzone');
+    const pickButton = document.getElementById('pickButton');
+    const errorBox = document.getElementById('errorBox');
+    const dashboard = document.getElementById('dashboard');
+    const emptyState = document.getElementById('emptyState');
+    const monthList = document.getElementById('monthList');
+
+    async function sha256Hex(text) {
+      const data = new TextEncoder().encode(text);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(hashBuffer)).map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function cleanText(value) {
+      if (value === null || value === undefined) return '';
+      return String(value).trim();
+    }
+
+    function formatMoney(value) {
+      const n = Number(value || 0);
+      return `${n.toLocaleString('ko-KR')}원`;
+    }
+
+    function formatPercent(value) {
+      const n = Number(value || 0);
+      if (!Number.isFinite(n)) return '-';
+      return `${(n * 100).toFixed(1)}%`;
+    }
+
+    function escapeHtml(value) {
+      return cleanText(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.classList.add('show');
+    }
+
+    function hideError() {
+      errorBox.classList.remove('show');
+      errorBox.textContent = '';
+    }
+
+    function showApp() {
+      authScreen.hidden = true;
+      appShell.hidden = false;
+      loadSavedSummaries();
+    }
+
+    function showLogin() {
+      authScreen.hidden = false;
+      appShell.hidden = true;
+      setTimeout(() => passwordInput.focus(), 50);
+    }
+
+    async function checkPassword() {
+      authError.textContent = '';
+      const input = passwordInput.value || '';
+      if (!input) {
+        authError.textContent = '비밀번호를 입력해줘요.';
+        return;
+      }
+      try {
+        const hash = await sha256Hex(input);
+        if (hash === PASSWORD_HASH) {
+          localStorage.setItem(AUTH_KEY, '1');
+          passwordInput.value = '';
+          showApp();
+        } else {
+          authError.textContent = '비밀번호가 맞지 않아요.';
+          passwordInput.select();
+        }
+      } catch (_) {
+        authError.textContent = '이 브라우저에서는 비밀번호 확인을 사용할 수 없어요.';
+      }
+    }
+
+    function getStore() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed;
+        if (parsed && Array.isArray(parsed.items)) return parsed.items;
+        return [];
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveStore(items) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    }
+
+    function loadSavedSummaries() {
+      renderAllSummaries(getStore());
+    }
+
+    function findRow(rows, predicate) {
+      return rows.findIndex((row) => predicate(cleanText(row?.[0] ?? '')));
+    }
+
+    function parseSummaryRows(rows) {
+      if (!rows.length) throw new Error('한눈요약 탭에 읽을 수 있는 내용이 없어요.');
+
+      const title = cleanText(rows[0]?.[0]) || '가계부 한눈요약';
+      const metrics = [];
+      ['총수입', '총지출', '순증감'].forEach((label) => {
+        const idx = findRow(rows, (cell) => cell === label);
+        if (idx >= 0) {
+          metrics.push({ label, value: rows[idx][1], note: cleanText(rows[idx][2]) });
+        }
+      });
+
+      const categoryHeader = findRow(rows, (cell) => cell === '분류');
+      if (categoryHeader < 0) throw new Error('한눈요약 탭에서 분류 표를 찾지 못했어요.');
+
+      const categories = [];
+      for (let i = categoryHeader + 1; i < rows.length; i++) {
+        const name = cleanText(rows[i]?.[0]);
+        if (!name) continue;
+        if (name === '합계') break;
+        categories.push({
+          name,
+          amount: Number(rows[i][1] || 0),
+          ratio: Number(rows[i][2] || 0),
+          count: Number(rows[i][3] || 0),
+          includes: cleanText(rows[i][4])
+        });
+      }
+
+      const topHeader = findRow(rows, (cell) => cell.includes('많이 쓴 항목'));
+      const top = [];
+      if (topHeader >= 0) {
+        for (let i = topHeader + 1; i < rows.length; i++) {
+          const item = cleanText(rows[i]?.[0]);
+          if (!item) continue;
+          top.push({
+            item,
+            category: cleanText(rows[i][1]),
+            count: Number(rows[i][2] || 0),
+            amount: Number(rows[i][3] || 0)
+          });
+        }
+      }
+
+      return { title, metrics, categories, top, parsedAt: new Date().toISOString() };
+    }
+
+    function parseWorkbook(arrayBuffer) {
+      if (!window.XLSX) {
+        throw new Error('엑셀 읽기 라이브러리를 불러오지 못했어요. 인터넷 연결 후 다시 열어주세요.');
+      }
+      const workbook = XLSX.read(arrayBuffer, { type: 'array', cellDates: true });
+      const sheetName = workbook.SheetNames.find((name) => name.trim() === '한눈요약');
+      if (!sheetName) {
+        throw new Error('시트 이름이 “한눈요약”인 탭을 찾지 못했어요. 최종 가계부 양식 파일인지 확인해줘요.');
+      }
+      const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {
+        header: 1, raw: true, defval: null, blankrows: false
+      });
+      return parseSummaryRows(rows);
+    }
+
+    function extractPeriod(title) {
+      const match = cleanText(title).match(/(\d{4}년\s*\d{1,2}월|\d{1,2}월)/);
+      return match ? match[1].replace(/\s+/g, ' ') : '';
+    }
+
+    function formatSummaryTitle(title) {
+      const text = cleanText(title);
+      if (!text) return '가계부';
+      return text
+        .replace(/\s*한눈요약\s*$/g, '')
+        .replace(/가계부\s*$/g, '가계부')
+        .trim();
+    }
+
+    function monthKey(data) {
+      return extractPeriod(data.title) || formatSummaryTitle(data.title) || `가계부 ${Date.now()}`;
+    }
+
+    function sortSummaries(items) {
+      return [...items].sort((a, b) => {
+        const ay = Number((extractPeriod(a.title).match(/(\d{4})년/) || [0, 0])[1]);
+        const by = Number((extractPeriod(b.title).match(/(\d{4})년/) || [0, 0])[1]);
+        const am = Number((extractPeriod(a.title).match(/(\d{1,2})월/) || [0, 0])[1]);
+        const bm = Number((extractPeriod(b.title).match(/(\d{1,2})월/) || [0, 0])[1]);
+        return (by * 100 + bm) - (ay * 100 + am);
+      });
+    }
+
+    function shortLabel(name) {
+      return cleanText(name)
+        .replace('뷰티/쇼핑', '뷰티/쇼핑')
+        .replace('교통/차량', '교통/차량')
+        .replace('문화/여가', '문화/여가');
+    }
+
+    function getCategoryColor(name, idx = 0) {
+      const key = cleanText(name);
+      return CATEGORY_COLORS[key] || CHART_COLORS[idx % CHART_COLORS.length];
+    }
+    function hexToRgb(hex) {
+      const normalized = String(hex || '').replace('#', '').trim();
+      if (normalized.length !== 6) return { r: 55, g: 60, b: 67 };
+      return {
+        r: parseInt(normalized.slice(0, 2), 16),
+        g: parseInt(normalized.slice(2, 4), 16),
+        b: parseInt(normalized.slice(4, 6), 16)
+      };
+    }
+
+    function getSliceLabelColors(hex) {
+      const { r, g, b } = hexToRgb(hex);
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      if (brightness < 118) {
+        return {
+          fill: '#F5F6F7',
+          stroke: 'rgba(24, 27, 32, 0.26)'
+        };
+      }
+      return {
+        fill: '#373C43',
+        stroke: 'rgba(255, 255, 255, 0.22)'
+      };
+    }
+
+    function getSliceLabelTone(hex) {
+      const { r, g, b } = hexToRgb(hex);
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      return brightness < 118 ? 'light' : 'dark';
+    }
+
+
+    function polarToCartesian(cx, cy, r, angleDeg) {
+      const angle = (angleDeg - 90) * Math.PI / 180;
+      return {
+        x: cx + r * Math.cos(angle),
+        y: cy + r * Math.sin(angle)
+      };
+    }
+
+    function arcPath(cx, cy, rOuter, rInner, startAngle, endAngle) {
+      const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+      const outerStart = polarToCartesian(cx, cy, rOuter, startAngle);
+      const outerEnd = polarToCartesian(cx, cy, rOuter, endAngle);
+      const innerEnd = polarToCartesian(cx, cy, rInner, endAngle);
+      const innerStart = polarToCartesian(cx, cy, rInner, startAngle);
+
+      return [
+        `M ${outerStart.x} ${outerStart.y}`,
+        `A ${rOuter} ${rOuter} 0 ${largeArc} 1 ${outerEnd.x} ${outerEnd.y}`,
+        `L ${innerEnd.x} ${innerEnd.y}`,
+        `A ${rInner} ${rInner} 0 ${largeArc} 0 ${innerStart.x} ${innerStart.y}`,
+        'Z'
+      ].join(' ');
+    }
+
+    function labelPosition(cx, cy, rInner, rOuter, startAngle, endAngle) {
+      const mid = startAngle + (endAngle - startAngle) / 2;
+      const r = (rInner + rOuter) / 2;
+      return polarToCartesian(cx, cy, r, mid);
+    }
+
+    function getInnerLabelPlacement(cx, x) {
+      const delta = x - cx;
+      if (delta > 18) {
+        return { anchor: 'end', x: x + 8.5 };
+      }
+      if (delta < -18) {
+        return { anchor: 'start', x: x - 8.5 };
+      }
+      return { anchor: 'middle', x };
+    }
+
+    function findMetricValue(metrics, label) {
+      const found = (metrics || []).find((metric) => cleanText(metric.label) === label);
+      return found ? Number(found.value || 0) : 0;
+    }
+
+    function renderMetrics(metrics) {
+      return metrics.map((metric) => `
+        <article class="metric">
+          <div class="label">${escapeHtml(metric.label)}</div>
+          <div class="value">${formatMoney(metric.value)}</div>
+          <div class="note">${escapeHtml(metric.note || '한눈요약 기준')}</div>
+        </article>
+      `).join('');
+    }
+
+    function renderSpendChart(categories) {
+      const sorted = [...categories].sort((a, b) => Number(b.amount || 0) - Number(a.amount || 0));
+      const total = sorted.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+      if (!total) {
+        return '<div class="donut-section"><p class="donut-caption">표시할 지출이 없어요.</p></div>';
+      }
+
+      const svgSize = 236;
+      const cx = svgSize / 2;
+      const cy = svgSize / 2;
+      const rOuter = 74;
+      const rInner = 50;
+      const labelOuter = 84;
+      let angle = 0;
+      const slices = [];
+      const labelCandidates = [];
+
+      sorted.forEach((cat, idx) => {
+        const amount = Number(cat.amount || 0);
+        if (amount <= 0) return;
+
+        const ratio = amount / total;
+        const sweep = ratio * 360;
+        const start = angle;
+        const end = angle + sweep;
+        const color = getCategoryColor(cat.name, idx);
+
+        slices.push(`<path class="donut-slice" d="${arcPath(cx, cy, rOuter, rInner, start, end)}" fill="${color}" stroke="rgba(255,255,255,0.94)" stroke-width="1.35"></path>`);
+
+        if (ratio >= 0.095) {
+          const mid = start + sweep / 2;
+          const label = shortLabel(cat.name);
+          const percent = `${(ratio * 100).toFixed(1)}%`;
+          const side = Math.cos((mid - 90) * Math.PI / 180) >= 0 ? 'right' : 'left';
+          const anchorPoint = polarToCartesian(cx, cy, rOuter + 1.5, mid);
+          const labelPoint = polarToCartesian(cx, cy, labelOuter, mid);
+          const chipW = Math.min(76, Math.max(54, Math.max(label.length * 5.25 + 18, percent.length * 5.1 + 18)));
+          const chipH = 26;
+          const chipX = side === 'right' ? labelPoint.x + 2 : labelPoint.x - chipW - 2;
+          const desiredY = labelPoint.y - chipH / 2;
+
+          labelCandidates.push({
+            side,
+            color,
+            label,
+            percent,
+            chipW,
+            chipH,
+            chipX,
+            desiredY,
+            anchorPoint,
+            labelPoint
+          });
+        }
+
+        angle = end;
+      });
+
+      const layoutLabels = (items, side) => {
+        const sortedItems = [...items].sort((a, b) => a.desiredY - b.desiredY);
+        const minY = 14;
+        const maxY = svgSize - 37;
+        const gap = 6;
+        let cursor = minY;
+
+        sortedItems.forEach((item) => {
+          item.chipY = Math.max(cursor, Math.min(maxY, item.desiredY));
+          cursor = item.chipY + item.chipH + gap;
+        });
+
+        cursor = maxY;
+        for (let i = sortedItems.length - 1; i >= 0; i -= 1) {
+          const item = sortedItems[i];
+          item.chipY = Math.min(item.chipY, cursor);
+          cursor = item.chipY - item.chipH - gap;
+        }
+
+        return sortedItems.map((item) => {
+          const chipX = Math.max(6, Math.min(svgSize - item.chipW - 6, item.chipX));
+          const chipY = Math.max(minY, Math.min(maxY, item.chipY));
+          const edgeX = side === 'right' ? chipX : chipX + item.chipW;
+          const edgeY = chipY + item.chipH / 2;
+          const lineEndX = edgeX;
+          const dotX = chipX + 8.8;
+          const textX = dotX + 5.2;
+          const percentX = textX;
+
+          return `
+            <path class="donut-label-line" d="M ${item.anchorPoint.x.toFixed(1)} ${item.anchorPoint.y.toFixed(1)} L ${lineEndX.toFixed(1)} ${edgeY.toFixed(1)}" stroke="${item.color}"></path>
+            <g class="donut-label-chip">
+              <rect x="${chipX.toFixed(1)}" y="${chipY.toFixed(1)}" width="${item.chipW.toFixed(1)}" height="${item.chipH}" rx="9"></rect>
+              <circle class="donut-label-dot" cx="${dotX.toFixed(1)}" cy="${(chipY + 8.8).toFixed(1)}" r="2.65" fill="${item.color}"></circle>
+              <text class="donut-label-text" text-anchor="start" x="${textX.toFixed(1)}" y="${(chipY + 8.7).toFixed(1)}">${escapeHtml(item.label)}</text>
+              <text class="donut-label-percent" text-anchor="start" x="${percentX.toFixed(1)}" y="${(chipY + 18.3).toFixed(1)}">${item.percent}</text>
+            </g>
+          `;
+        }).join('');
+      };
+
+      const leftLabels = layoutLabels(labelCandidates.filter((item) => item.side === 'left'), 'left');
+      const rightLabels = layoutLabels(labelCandidates.filter((item) => item.side === 'right'), 'right');
+      const labelGroups = [...leftLabels, ...rightLabels].join('');
+
+      const detailCards = sorted.map((cat, idx) => {
+        const color = getCategoryColor(cat.name, idx);
+        const labelTone = getSliceLabelTone(color);
+        return `
+          <article class="category-side-card">
+            <div class="category-side-top">
+              <div class="category-side-name">
+                <span class="category-side-dot" style="background:${color}"></span>
+                <span>${escapeHtml(cat.name)}</span>
+              </div>
+              <div class="category-side-amount">${formatMoney(cat.amount)}</div>
+            </div>
+            <div class="category-side-progress">
+              <div class="category-side-progress-top">
+                <span class="category-side-progress-label">비중</span>
+                <span class="category-side-progress-value">${formatPercent(cat.ratio)}</span>
+              </div>
+              <div class="category-side-bar" aria-label="${escapeHtml(cat.name)} 비중 ${formatPercent(cat.ratio)}">
+                <div class="category-side-bar-fill" style="width:${Math.max(3, Number(cat.ratio || 0) * 100)}%; background:${color}"></div>
+              </div>
+            </div>
+            <div class="category-side-includes">${escapeHtml(cat.includes || '')}</div>
+          </article>
+        `;
+      }).join('');
+
+      return `
+        <div class="donut-section">
+          <div class="donut-layout">
+            <div class="donut-visual">
+              <svg viewBox="0 0 ${svgSize} ${svgSize}" role="img" aria-label="분류별 지출 원형 그래프">
+                <circle cx="${cx}" cy="${cy}" r="${rOuter}" fill="none" stroke="#ECEBE7" stroke-width="${rOuter - rInner}"></circle>
+                ${slices.join('')}
+                ${labelGroups}
+              </svg>
+              <div class="donut-center">
+                <div>
+                  <strong>총지출</strong>
+                  <span>${formatMoney(total)}</span>
+                </div>
+              </div>
+            </div>
+            <div class="category-side-grid">
+              ${detailCards}
+            </div>
+          </div>
+          
+        </div>
+      `;
+    }
+
+    function renderCategoryCards(categories) {
+      return `
+        <div class="legend-list">
+          ${categories.map((cat, idx) => {
+            const color = getCategoryColor(cat.name, idx);
+        const labelTone = getSliceLabelTone(color);
+            return `
+              <article class="legend-item">
+                <div class="legend-top">
+                  <div class="legend-name-row">
+                    <span class="legend-dot" style="background:${color}"></span>
+                    <span class="legend-name">${escapeHtml(cat.name)}</span>
+                  </div>
+                  <span class="legend-amount">${formatMoney(cat.amount)}</span>
+                </div>
+                <div class="category-meta">
+                  <span class="chip">${formatPercent(cat.ratio)}</span>
+                  <span>${escapeHtml(cat.includes || '')}</span>
+                </div>
+              </article>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderTopTable(top) {
+      return `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>순위</th>
+                <th>항목</th>
+                <th>분류</th>
+                <th class="num">건수</th>
+                <th class="num">지출</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${top.slice(0, 10).map((row, idx) => `
+                <tr>
+                  <td class="rank">${idx + 1}</td>
+                  <td class="top-item">
+                    <span>${escapeHtml(row.item)}</span>
+                    <span class="top-mobile-meta">${escapeHtml(row.category)} · ${Number(row.count || 0).toLocaleString('ko-KR')}건</span>
+                  </td>
+                  <td class="top-category">${escapeHtml(row.category)}</td>
+                  <td class="num top-count">${Number(row.count || 0).toLocaleString('ko-KR')}</td>
+                  <td class="num top-amount">${formatMoney(row.amount)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderMonthCard(data, index) {
+      const key = monthKey(data);
+      const title = formatSummaryTitle(data.title);
+      const isOpen = index === 0 ? 'open' : '';
+
+      return `
+        <details class="month-card" data-key="${escapeHtml(key)}" ${isOpen}>
+          <summary>
+            <div class="month-title-wrap">
+              <span class="month-toggle" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M7 10l5 5 5-5"></path>
+                </svg>
+              </span>
+              <h2 class="month-title">${escapeHtml(title)}</h2>
+            </div>
+            <div class="month-actions">
+              <span class="month-summary-mini">총지출 <strong>${formatMoney(findMetricValue(data.metrics, '총지출'))}</strong></span>
+              <button class="delete-chip" type="button" data-delete-key="${escapeHtml(key)}" aria-label="이 달 가계부 삭제">
+                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                  <path d="M7 7l10 10M17 7L7 17"></path>
+                </svg>
+              </button>
+            </div>
+          </summary>
+          <div class="month-body">
+            <div class="metric-grid">
+              ${renderMetrics(data.metrics)}
+            </div>
+
+            <div class="section-grid">
+              <section class="panel">
+                <div class="panel-head">
+                  <div>
+                    <h3>분류별 지출</h3>
+                    <p class="hint"></p>
+                  </div>
+                </div>
+                ${renderSpendChart(data.categories)}
+              </section>
+
+              <section class="panel">
+                <div class="panel-head">
+                  <div>
+                    <h3>많이 쓴 항목 TOP 10</h3>
+                    <p class="hint"></p>
+                  </div>
+                </div>
+                ${renderTopTable(data.top)}
+              </section>
+            </div>
+          </div>
+        </details>
+      `;
+    }
+
+    function renderAllSummaries(items) {
+      const sorted = sortSummaries(items);
+      if (!sorted.length) {
+        dashboard.classList.remove('show');
+        emptyState.style.display = 'block';
+        monthList.innerHTML = '';
+        return;
+      }
+
+      dashboard.classList.add('show');
+      emptyState.style.display = 'none';
+      monthList.innerHTML = sorted.map((item, idx) => renderMonthCard(item, idx)).join('');
+
+      monthList.querySelectorAll('[data-delete-key]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          const key = button.getAttribute('data-delete-key');
+          const next = getStore().filter((item) => monthKey(item) !== key);
+          saveStore(next);
+          renderAllSummaries(next);
+        });
+      });
+    }
+
+    async function handleFile(file) {
+      hideError();
+      if (!file) return;
+      if (!/\.(xlsx|xls)$/i.test(file.name)) {
+        showError('엑셀 파일(.xlsx 또는 .xls)만 업로드할 수 있어요.');
+        return;
+      }
+
+      try {
+        const buffer = await file.arrayBuffer();
+        const data = parseWorkbook(buffer);
+        const key = monthKey(data);
+        const current = getStore().filter((item) => monthKey(item) !== key);
+        const next = [data, ...current];
+        saveStore(next);
+        renderAllSummaries(next);
+      } catch (error) {
+        console.error(error);
+        showError(error.message || '파일을 읽는 중 문제가 생겼어요.');
+      }
+    }
+
+    authForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      checkPassword();
+    });
+
+    pickButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (event) => {
+      handleFile(event.target.files?.[0]);
+      fileInput.value = '';
+    });
+
+    ['dragenter', 'dragover'].forEach((eventName) => {
+      dropzone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        dropzone.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach((eventName) => {
+      dropzone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        dropzone.classList.remove('dragover');
+      });
+    });
+
+    dropzone.addEventListener('drop', (event) => {
+      handleFile(event.dataTransfer.files?.[0]);
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem(AUTH_KEY) === '1') {
+        showApp();
+      } else {
+        showLogin();
+      }
+    });
+  </script>
+</body>
+</html>
