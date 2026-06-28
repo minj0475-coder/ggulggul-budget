@@ -4,6 +4,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>꿀꿀 부부 가계부</title>
+  <meta name="description" content="꿀꿀 부부 가계부 — 월별 가계부를 누적 저장하고 PC와 모바일에서 함께 확인하는 가계부 웹앱" />
+  <link rel="canonical" href="https://minj0475-coder.github.io/ggulggul-budget/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="꿀꿀 부부 가계부" />
+  <meta property="og:title" content="꿀꿀 부부 가계부" />
+  <meta property="og:description" content="월별 가계부를 누적 저장하고 PC와 모바일에서 함께 확인해요." />
+  <meta property="og:url" content="https://minj0475-coder.github.io/ggulggul-budget/" />
+  <meta property="og:image" content="https://minj0475-coder.github.io/ggulggul-budget/preview-card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="흰색 배경 위에 크게 배치된 꿀꿀 부부 가계부 돼지 얼굴 로고" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="꿀꿀 부부 가계부" />
+  <meta name="twitter:description" content="월별 가계부를 누적 저장하고 PC와 모바일에서 함께 확인해요." />
+  <meta name="twitter:image" content="https://minj0475-coder.github.io/ggulggul-budget/preview-card.png" />
+
   <meta name="theme-color" content="#f7f7f5" />
   <meta name="application-name" content="꿀꿀 부부 가계부" />
   <meta name="apple-mobile-web-app-title" content="꿀꿀 부부 가계부" />
@@ -2364,6 +2380,148 @@
       }
     }
 
+
+    /* Login screen alignment polish */
+    .auth-card {
+      text-align: center;
+    }
+
+    .auth-card h1 {
+      text-align: center;
+      letter-spacing: -0.045em;
+    }
+
+    .auth-card p {
+      max-width: 360px;
+      margin: 10px auto 24px;
+      text-align: center;
+    }
+
+    .auth-form {
+      text-align: left;
+    }
+
+    .auth-form label {
+      display: block;
+      margin-left: 3px;
+    }
+
+    .password-row {
+      align-items: stretch;
+    }
+
+    .password-row input {
+      height: 54px;
+    }
+
+    .password-row .solid-btn {
+      min-width: 68px;
+      height: 54px;
+      flex: 0 0 auto;
+      border-radius: 14px !important;
+    }
+
+    .auth-error {
+      text-align: left;
+      padding-left: 3px;
+    }
+
+
+    /* Firebase sync + responsive read-only polish */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .logout-btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.74);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 750;
+      cursor: pointer;
+      transition: 0.16s ease;
+      white-space: nowrap;
+    }
+
+    .logout-btn:hover {
+      background: #fff;
+      color: var(--text);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    .auth-input {
+      width: 100%;
+      height: 54px;
+      border: 1px solid var(--line-2);
+      border-radius: 14px;
+      padding: 0 13px;
+      font: inherit;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+    }
+
+    .auth-input:focus {
+      border-color: #8f8f89;
+      box-shadow: 0 0 0 4px rgba(32,33,35,0.07);
+    }
+
+    .sync-status, .mobile-note {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .sync-status {
+      min-height: 20px;
+      text-align: right;
+      padding-right: 4px;
+    }
+
+    .mobile-note {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.78);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.035);
+      padding: 14px 16px;
+      text-align: center;
+    }
+
+    .delete-chip[disabled], .solid-btn[disabled], .logout-btn[disabled] {
+      opacity: 0.58;
+      cursor: wait;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    @media (max-width: 760px) {
+      .app-header {
+        align-items: flex-start;
+      }
+
+      .logout-btn {
+        padding: 8px 11px;
+        font-size: 12px;
+      }
+
+      .upload-shell {
+        display: none;
+      }
+
+      .sync-status {
+        text-align: left;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -2371,8 +2529,10 @@
     <div class="auth-card">
       <div class="auth-mark" aria-hidden="true"><img src="pig-logo-square.png" alt="" /></div>
       <h1>꿀꿀 부부 가계부</h1>
-      <p>비밀번호를 입력하면 엑셀 업로드 화면이 열려요. 업로드한 파일은 서버로 전송되지 않고 브라우저 안에서만 처리됩니다.</p>
+      <p>로그인하면 저장된 월별 가계부를 PC와 모바일에서 함께 확인할 수 있어요. 엑셀 원본은 저장하지 않고, 한눈요약 데이터만 누적 저장됩니다.</p>
       <form class="auth-form" id="authForm">
+        <label for="emailInput">이메일</label>
+        <input class="auth-input" id="emailInput" type="email" autocomplete="username" placeholder="이메일 입력" />
         <label for="passwordInput">비밀번호</label>
         <div class="password-row">
           <input id="passwordInput" type="password" autocomplete="current-password" placeholder="비밀번호 입력" />
@@ -2380,29 +2540,34 @@
         </div>
         <div class="auth-error" id="authError" role="alert"></div>
       </form>
-      <div class="auth-footnote">실제 가계부 엑셀 파일은 GitHub에 올리지 말고, 페이지에서 직접 업로드해서 확인해요.</div>
     </div>
   </section>
 
   <main class="app" id="appShell" hidden>
-    <header>
+    <header class="app-header">
       <div class="brand">
         <div class="mark" aria-hidden="true"><img src="pig-logo-square.png" alt="" /></div>
         <h1>꿀꿀 부부 가계부</h1>
       </div>
+      <button class="logout-btn" type="button" id="logoutButton">로그아웃</button>
     </header>
 
-    <section class="upload-shell" aria-label="파일 업로드 영역">
+    <section class="upload-shell" id="uploadShell" aria-label="파일 업로드 영역">
       <label class="dropzone" id="dropzone" for="fileInput">
         <div class="drop-inner">
           <strong>가계부 엑셀 파일 업로드</strong>
-          <span>.xlsx 파일을 선택하거나 여기로 끌어다 놓으면 한눈요약을 불러와요.</span>
+          <span>PC에서 .xlsx 파일을 올리면 해당 월만 저장되고, 기존 월별 데이터는 그대로 누적돼요.</span>
           <button class="solid-btn" type="button" id="pickButton">파일 선택</button>
         </div>
       </label>
       <input id="fileInput" type="file" accept=".xlsx,.xls" />
     </section>
 
+    <section class="mobile-note" id="mobileNote" hidden>
+      모바일에서는 저장된 가계부를 확인만 할 수 있어요. 새 엑셀 업로드는 PC에서 진행해 주세요.
+    </section>
+
+    <div class="sync-status" id="syncStatus" role="status"></div>
     <div class="error" id="errorBox" role="alert"></div>
 
     <section class="dashboard" id="dashboard" aria-label="한눈요약 대시보드">
@@ -2411,18 +2576,36 @@
 
     <section class="empty-state" id="emptyState">
       <strong>아직 불러온 가계부가 없어요</strong>
-      <span>위에서 가계부 파일을 올리면 한눈요약 내용이 여기에 표시돼요.</span>
+      <span>PC에서 가계부 파일을 올리면 월별 한눈요약이 누적 저장돼요.</span>
     </section>
 
     <footer>
-      업로드한 엑셀 파일은 서버로 전송되지 않고 브라우저 안에서 처리됩니다.
+      엑셀 원본 파일은 저장하지 않고, PC·모바일 확인을 위해 월별 한눈요약 데이터만 저장됩니다.
     </footer>
   </main>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC2cOrz60-e_wfpSdakhnWG6pkcVyjb3YI",
+      authDomain: "minj0475-ggulggul-budget.firebaseapp.com",
+      projectId: "minj0475-ggulggul-budget",
+      storageBucket: "minj0475-ggulggul-budget.firebasestorage.app",
+      messagingSenderId: "822578452335",
+      appId: "1:822578452335:web:278b0c19907a123c383a9a"
+    };
+
+    const firebaseApp = initializeApp(firebaseConfig);
+    const auth = getAuth(firebaseApp);
+    const db = getFirestore(firebaseApp);
+
     const STORAGE_KEY = 'householdSummary:monthlySummaries';
-    const AUTH_KEY = 'householdSummary:unlocked';
-    const PASSWORD_HASH = '5c83a242f110d58c915bc145a93f7bad5ff8a77e717a47716814dc70781c39df';
+    const MIGRATION_KEY = 'householdSummary:cloudMigrated';
+    const LAST_EMAIL_KEY = 'householdSummary:lastEmail';
+    const COLLECTION_NAME = 'householdSummaries';
     const CHART_COLORS = ['#2E3642', '#7FA271', '#6F92D7', '#AC97D2', '#CAA654', '#C47B63', '#5C98A5', '#C487A4', '#8F9FB6', '#B7A06A'];
     const CATEGORY_COLORS = {
       '고정비': '#2E3642',
@@ -2440,8 +2623,13 @@
     const authScreen = document.getElementById('authScreen');
     const appShell = document.getElementById('appShell');
     const authForm = document.getElementById('authForm');
+    const emailInput = document.getElementById('emailInput');
     const passwordInput = document.getElementById('passwordInput');
     const authError = document.getElementById('authError');
+    const uploadShell = document.getElementById('uploadShell');
+    const mobileNote = document.getElementById('mobileNote');
+    const syncStatus = document.getElementById('syncStatus');
+    const logoutButton = document.getElementById('logoutButton');
     const fileInput = document.getElementById('fileInput');
     const dropzone = document.getElementById('dropzone');
     const pickButton = document.getElementById('pickButton');
@@ -2450,10 +2638,25 @@
     const emptyState = document.getElementById('emptyState');
     const monthList = document.getElementById('monthList');
 
-    async function sha256Hex(text) {
-      const data = new TextEncoder().encode(text);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-      return Array.from(new Uint8Array(hashBuffer)).map((b) => b.toString(16).padStart(2, '0')).join('');
+    let currentUser = null;
+    let currentItems = [];
+
+    function setSyncStatus(message = '') {
+      syncStatus.textContent = message;
+    }
+
+    function isMobileView() {
+      return window.matchMedia('(max-width: 760px)').matches;
+    }
+
+    function updateMobileMode() {
+      const mobile = isMobileView();
+      if (uploadShell) uploadShell.hidden = mobile;
+      if (mobileNote) mobileNote.hidden = !mobile;
+    }
+
+    function toPlainData(data) {
+      return JSON.parse(JSON.stringify(data));
     }
 
     function cleanText(value) {
@@ -2494,34 +2697,48 @@
     function showApp() {
       authScreen.hidden = true;
       appShell.hidden = false;
+      updateMobileMode();
       loadSavedSummaries();
     }
 
     function showLogin() {
       authScreen.hidden = false;
       appShell.hidden = true;
-      setTimeout(() => passwordInput.focus(), 50);
+      authError.textContent = '';
+      const savedEmail = localStorage.getItem(LAST_EMAIL_KEY) || '';
+      if (savedEmail && !emailInput.value) emailInput.value = savedEmail;
+      setTimeout(() => (emailInput.value ? passwordInput : emailInput).focus(), 50);
     }
 
     async function checkPassword() {
       authError.textContent = '';
-      const input = passwordInput.value || '';
-      if (!input) {
-        authError.textContent = '비밀번호를 입력해줘요.';
+      const email = cleanText(emailInput.value);
+      const password = passwordInput.value || '';
+      if (!email) {
+        authError.textContent = '이메일을 입력해줘요.';
+        emailInput.focus();
         return;
       }
+      if (!password) {
+        authError.textContent = '비밀번호를 입력해줘요.';
+        passwordInput.focus();
+        return;
+      }
+
+      const submitButton = authForm.querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+      submitButton.textContent = '확인 중';
       try {
-        const hash = await sha256Hex(input);
-        if (hash === PASSWORD_HASH) {
-          localStorage.setItem(AUTH_KEY, '1');
-          passwordInput.value = '';
-          showApp();
-        } else {
-          authError.textContent = '비밀번호가 맞지 않아요.';
-          passwordInput.select();
-        }
-      } catch (_) {
-        authError.textContent = '이 브라우저에서는 비밀번호 확인을 사용할 수 없어요.';
+        await signInWithEmailAndPassword(auth, email, password);
+        localStorage.setItem(LAST_EMAIL_KEY, email);
+        passwordInput.value = '';
+      } catch (error) {
+        console.error(error);
+        authError.textContent = '이메일 또는 비밀번호가 맞지 않아요.';
+        passwordInput.select();
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = '열기';
       }
     }
 
@@ -2542,8 +2759,60 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     }
 
-    function loadSavedSummaries() {
-      renderAllSummaries(getStore());
+    async function fetchCloudSummaries() {
+      const snapshot = await getDocs(collection(db, COLLECTION_NAME));
+      const items = [];
+      snapshot.forEach((docSnap) => {
+        items.push({ ...docSnap.data(), periodId: docSnap.id });
+      });
+      return items;
+    }
+
+    async function migrateLocalSummariesToCloud(cloudItems) {
+      if (localStorage.getItem(MIGRATION_KEY) === '1') return false;
+      const localItems = getStore();
+      if (!localItems.length) {
+        localStorage.setItem(MIGRATION_KEY, '1');
+        return false;
+      }
+
+      const cloudKeys = new Set(cloudItems.map((item) => monthKey(item)));
+      let migratedCount = 0;
+      for (const item of localItems) {
+        const id = monthKey(item);
+        if (!id || cloudKeys.has(id)) continue;
+        const plain = toPlainData({
+          ...item,
+          periodId: id,
+          migratedAt: new Date().toISOString(),
+          updatedAt: item.updatedAt || item.parsedAt || new Date().toISOString()
+        });
+        await setDoc(doc(db, COLLECTION_NAME, id), plain);
+        migratedCount += 1;
+      }
+      localStorage.setItem(MIGRATION_KEY, '1');
+      return migratedCount > 0;
+    }
+
+    async function loadSavedSummaries() {
+      if (!currentUser) return;
+      hideError();
+      setSyncStatus('저장된 가계부를 불러오는 중이에요...');
+      try {
+        let cloudItems = await fetchCloudSummaries();
+        const migrated = await migrateLocalSummariesToCloud(cloudItems);
+        if (migrated) cloudItems = await fetchCloudSummaries();
+        currentItems = cloudItems;
+        saveStore(currentItems);
+        renderAllSummaries(currentItems);
+        setSyncStatus(currentItems.length ? '클라우드에 저장된 월별 가계부를 불러왔어요.' : '아직 저장된 월별 가계부가 없어요. PC에서 엑셀 파일을 올려주세요.');
+      } catch (error) {
+        console.error(error);
+        currentItems = getStore();
+        renderAllSummaries(currentItems);
+        setSyncStatus('클라우드 연결을 확인하지 못해서 이 브라우저의 임시 저장본을 보여주고 있어요.');
+        showError('Firebase 저장소를 불러오지 못했어요. 로그인 상태와 Firestore 규칙을 확인해줘요.');
+      }
     }
 
     function findRow(rows, predicate) {
@@ -2617,6 +2886,21 @@
       return match ? match[1].replace(/\s+/g, ' ') : '';
     }
 
+    function periodIdFromTitle(title) {
+      const text = cleanText(title);
+      const full = text.match(/(\d{4})\s*년\s*(\d{1,2})\s*월/);
+      if (full) return `${full[1]}-${String(Number(full[2])).padStart(2, '0')}`;
+      const monthOnly = text.match(/(\d{1,2})\s*월/);
+      if (monthOnly) return `${new Date().getFullYear()}-${String(Number(monthOnly[1])).padStart(2, '0')}`;
+      return '';
+    }
+
+    function periodLabelFromId(id) {
+      const match = cleanText(id).match(/^(\d{4})-(\d{2})$/);
+      if (!match) return '';
+      return `${match[1]}년 ${Number(match[2])}월`;
+    }
+
     function formatSummaryTitle(title) {
       const text = cleanText(title);
       if (!text) return '가계부';
@@ -2627,17 +2911,22 @@
     }
 
     function monthKey(data) {
-      return extractPeriod(data.title) || formatSummaryTitle(data.title) || `가계부 ${Date.now()}`;
+      if (data?.periodId) return cleanText(data.periodId);
+      return periodIdFromTitle(data?.title) || extractPeriod(data?.title) || formatSummaryTitle(data?.title) || `summary-${Date.now()}`;
+    }
+
+    function sortablePeriodValue(item) {
+      const id = cleanText(item?.periodId);
+      const idMatch = id.match(/^(\d{4})-(\d{2})$/);
+      if (idMatch) return Number(idMatch[1]) * 100 + Number(idMatch[2]);
+      const period = extractPeriod(item?.title);
+      const y = Number((period.match(/(\d{4})년/) || [0, 0])[1]);
+      const m = Number((period.match(/(\d{1,2})월/) || [0, 0])[1]);
+      return y * 100 + m;
     }
 
     function sortSummaries(items) {
-      return [...items].sort((a, b) => {
-        const ay = Number((extractPeriod(a.title).match(/(\d{4})년/) || [0, 0])[1]);
-        const by = Number((extractPeriod(b.title).match(/(\d{4})년/) || [0, 0])[1]);
-        const am = Number((extractPeriod(a.title).match(/(\d{1,2})월/) || [0, 0])[1]);
-        const bm = Number((extractPeriod(b.title).match(/(\d{1,2})월/) || [0, 0])[1]);
-        return (by * 100 + bm) - (ay * 100 + am);
-      });
+      return [...items].sort((a, b) => sortablePeriodValue(b) - sortablePeriodValue(a));
     }
 
     function shortLabel(name) {
@@ -2953,7 +3242,7 @@
 
     function renderMonthCard(data, index) {
       const key = monthKey(data);
-      const title = formatSummaryTitle(data.title);
+      const title = formatSummaryTitle(data.title) || periodLabelFromId(key) || '가계부';
       const isOpen = index === 0 ? 'open' : '';
 
       return `
@@ -3021,13 +3310,26 @@
       monthList.innerHTML = sorted.map((item, idx) => renderMonthCard(item, idx)).join('');
 
       monthList.querySelectorAll('[data-delete-key]').forEach((button) => {
-        button.addEventListener('click', (event) => {
+        button.addEventListener('click', async (event) => {
           event.preventDefault();
           event.stopPropagation();
           const key = button.getAttribute('data-delete-key');
-          const next = getStore().filter((item) => monthKey(item) !== key);
-          saveStore(next);
-          renderAllSummaries(next);
+          const target = currentItems.find((item) => monthKey(item) === key);
+          const label = target ? (formatSummaryTitle(target.title) || periodLabelFromId(key) || '이 달 가계부') : '이 달 가계부';
+          if (!confirm(`${label}를 삭제할까요?
+삭제하면 PC와 모바일에서 모두 사라져요.`)) return;
+          button.disabled = true;
+          try {
+            await deleteDoc(doc(db, COLLECTION_NAME, key));
+            currentItems = currentItems.filter((item) => monthKey(item) !== key);
+            saveStore(currentItems);
+            renderAllSummaries(currentItems);
+            setSyncStatus(`${label}를 삭제했어요.`);
+          } catch (error) {
+            console.error(error);
+            button.disabled = false;
+            showError('삭제 중 문제가 생겼어요. 잠시 후 다시 시도해줘요.');
+          }
         });
       });
     }
@@ -3035,22 +3337,48 @@
     async function handleFile(file) {
       hideError();
       if (!file) return;
+      if (isMobileView()) {
+        showError('모바일에서는 확인만 가능해요. 새 엑셀 업로드는 PC에서 진행해 주세요.');
+        return;
+      }
+      if (!currentUser) {
+        showError('로그인 후 업로드할 수 있어요.');
+        return;
+      }
       if (!/\.(xlsx|xls)$/i.test(file.name)) {
         showError('엑셀 파일(.xlsx 또는 .xls)만 업로드할 수 있어요.');
         return;
       }
 
+      pickButton.disabled = true;
+      setSyncStatus('엑셀 파일을 읽고 저장하는 중이에요...');
       try {
         const buffer = await file.arrayBuffer();
-        const data = parseWorkbook(buffer);
-        const key = monthKey(data);
-        const current = getStore().filter((item) => monthKey(item) !== key);
-        const next = [data, ...current];
-        saveStore(next);
-        renderAllSummaries(next);
+        const parsed = parseWorkbook(buffer);
+        const id = monthKey(parsed);
+        const title = formatSummaryTitle(parsed.title) || periodLabelFromId(id) || '가계부';
+        const exists = currentItems.some((item) => monthKey(item) === id) || (await getDoc(doc(db, COLLECTION_NAME, id))).exists();
+        if (exists && !confirm(`${title} 데이터가 이미 있어요.
+이 파일로 해당 월만 교체할까요?`)) {
+          setSyncStatus('업로드를 취소했어요. 기존 데이터는 그대로 유지됩니다.');
+          return;
+        }
+
+        const data = toPlainData({
+          ...parsed,
+          periodId: id,
+          sourceFile: file.name,
+          updatedAt: new Date().toISOString()
+        });
+        await setDoc(doc(db, COLLECTION_NAME, id), data);
+        await loadSavedSummaries();
+        setSyncStatus(`${title}를 클라우드에 저장했어요. PC와 모바일에서 함께 볼 수 있어요.`);
       } catch (error) {
         console.error(error);
         showError(error.message || '파일을 읽는 중 문제가 생겼어요.');
+        setSyncStatus('저장하지 못했어요. 파일과 인터넷 연결을 확인해줘요.');
+      } finally {
+        pickButton.disabled = false;
       }
     }
 
@@ -3088,12 +3416,37 @@
       handleFile(event.dataTransfer.files?.[0]);
     });
 
-    window.addEventListener('DOMContentLoaded', () => {
-      if (localStorage.getItem(AUTH_KEY) === '1') {
-        showApp();
-      } else {
-        showLogin();
+    logoutButton.addEventListener('click', async () => {
+      logoutButton.disabled = true;
+      try {
+        await signOut(auth);
+      } finally {
+        logoutButton.disabled = false;
       }
+    });
+
+    window.addEventListener('resize', updateMobileMode);
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateMobileMode();
+      const savedEmail = localStorage.getItem(LAST_EMAIL_KEY) || '';
+      if (savedEmail) emailInput.value = savedEmail;
+
+      setPersistence(auth, browserLocalPersistence).catch((error) => {
+        console.warn('Firebase persistence 설정 실패', error);
+      });
+
+      onAuthStateChanged(auth, (user) => {
+        currentUser = user;
+        if (user) {
+          if (!emailInput.value && user.email) emailInput.value = user.email;
+          showApp();
+        } else {
+          currentItems = [];
+          renderAllSummaries([]);
+          showLogin();
+        }
+      });
     });
   </script>
 </body>
