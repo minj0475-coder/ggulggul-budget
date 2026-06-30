@@ -3090,15 +3090,22 @@
       transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease;
     }
 
-    .nav-summary:hover,
-    .nav-section[open] > .nav-summary,
+    .nav-summary:hover {
+      background: #f7f7f5;
+      color: #2f3136;
+      transform: translateX(1px);
+    }
+
+    .nav-section[open] > .nav-summary {
+      background: transparent;
+      color: var(--text);
+      font-weight: 780;
+    }
+
     .nav-summary.active {
       background: #f1f1ef;
       color: #2f3136;
-    }
-
-    .nav-summary:hover {
-      transform: translateX(1px);
+      font-weight: 820;
     }
 
     .nav-caret {
@@ -3147,10 +3154,21 @@
       transition: background 0.16s ease, color 0.16s ease;
     }
 
-    .year-summary:hover,
-    .year-group[open] > .year-summary {
+    .year-summary:hover {
       background: #f7f7f5;
       color: #4f5359;
+    }
+
+    .year-group[open] > .year-summary {
+      background: transparent;
+      color: var(--muted);
+      font-weight: 820;
+    }
+
+    .side-nav .month-link.active {
+      background: #f1f1ef;
+      color: #2f3136;
+      font-weight: 820;
     }
 
     .year-summary .nav-caret {
@@ -3992,7 +4010,7 @@
     function renderDashboardContent(data, options = {}) {
       if (!data) return '';
       const key = monthKey(data);
-      const title = formatSummaryTitle(data.title) || periodLabelFromId(key) || '가계부';
+      const title = periodLabelFromId(key) || formatSummaryTitle(data.title) || '가계부';
       const showDelete = options.showDelete !== false;
       const openAttr = options.open === true ? ' open' : '';
       const monthExpense = findMetricValue(data.metrics, '총지출');
@@ -4009,7 +4027,7 @@
               <h2 class="month-title">${escapeHtml(title)}</h2>
             </div>
             <div class="month-actions">
-              <span class="month-summary-mini">월 총지출 <strong>${formatMoney(monthExpense)}</strong></span>
+              <span class="month-summary-mini">지출 <strong>${formatMoney(monthExpense)}</strong></span>
               ${showDelete ? `
                 <button class="delete-chip" type="button" data-delete-key="${escapeHtml(key)}" aria-label="이 달 가계부 삭제">
                   <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
@@ -4073,7 +4091,7 @@
 
       const ledgerTree = sorted.length ? `
         <details class="nav-section ledger-section" ${sorted.length ? 'open' : ''}>
-          <summary class="nav-summary ${activeView === 'ledger' ? 'active' : ''}">
+          <summary class="nav-summary">
             <span>가계부</span>
             ${caret}
           </summary>
@@ -4101,7 +4119,7 @@
         </details>
       ` : `
         <details class="nav-section ledger-section" open>
-          <summary class="nav-summary ${activeView === 'ledger' ? 'active' : ''}">
+          <summary class="nav-summary">
             <span>가계부</span>
             ${caret}
           </summary>
@@ -4337,7 +4355,7 @@
 
     async function deleteMonthByKey(key, button) {
       const target = currentItems.find((item) => monthKey(item) === key);
-      const label = target ? (formatSummaryTitle(target.title) || periodLabelFromId(key) || '이 달 가계부') : '이 달 가계부';
+      const label = target ? (periodLabelFromId(key) || formatSummaryTitle(target.title) || '이 달') : '이 달';
       if (!confirm(`${label}를 삭제할까요?\n삭제하면 PC와 모바일에서 모두 사라져요.`)) return;
       if (button) button.disabled = true;
       try {
@@ -4392,7 +4410,7 @@
         const buffer = await file.arrayBuffer();
         const parsed = parseWorkbook(buffer);
         const id = monthKey(parsed);
-        const title = formatSummaryTitle(parsed.title) || periodLabelFromId(id) || '가계부';
+        const title = periodLabelFromId(id) || formatSummaryTitle(parsed.title) || '가계부';
         const exists = currentItems.some((item) => monthKey(item) === id) || (await getDoc(doc(db, COLLECTION_NAME, id))).exists();
         if (exists && !confirm(`${title} 데이터가 이미 있어요.
 이 파일로 해당 월만 교체할까요?`)) {
